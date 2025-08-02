@@ -17,7 +17,8 @@ Este modelo predice qué especie de *Helicobacter* puede encontrarse en un anima
 según el país, animal, tipo de muestra y año de detección.
 """)
 
-df = pd.read_csv("helicobacter_data.csv", encoding="windows-1252", sep=";")
+df = pd.read_csv("helicobacter_data.csv", sep=";")
+
 
 # Codificar columnas
 le_animal = LabelEncoder()
