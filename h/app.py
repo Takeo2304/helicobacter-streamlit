@@ -27,7 +27,7 @@ le_muestra = LabelEncoder()
 le_especie = LabelEncoder()
 
 df["Animal_encoded"] = le_animal.fit_transform(df["Animal"])
-df["Pais_encoded"] = le_pais.fit_transform(df["Pais"])
+df["País_encoded"] = le_pais.fit_transform(df["País"])
 df["Muestra_encoded"] = le_muestra.fit_transform(df["Muestra"])
 df["Especie_encoded"] = le_especie.fit_transform(df["Especie"])
 
