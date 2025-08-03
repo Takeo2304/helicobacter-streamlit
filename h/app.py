@@ -21,7 +21,7 @@ según el país, animal, tipo de muestra y año de detección.
 
 # Cargar el CSV
 csv_path = os.path.join(os.path.dirname(__file__), "helicobacter_data.csv")
-df = pd.read_csv(csv_path, sep=";")
+df = pd.read_csv(csv_path, sep=";", encoding="latin1")
 
 # Normalizar nombres de columnas (quita tildes y caracteres especiales)
 def normalizar_columna(col):
