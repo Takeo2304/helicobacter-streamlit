@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 # ---------- CARGAR Y PROCESAR DATOS ----------
 st.title("🧬 Predicción de *Helicobacter spp.* en Animales de Granja")
@@ -17,7 +18,11 @@ Este modelo predice qué especie de *Helicobacter* puede encontrarse en un anima
 según el país, animal, tipo de muestra y año de detección.
 """)
 
-df = pd.read_csv("helicobacter_data.csv", sep=";")
+
+csv_path = os.path.join(os.path.dirname(__file__), "helicobacter_data.csv")
+df = pd.read_csv(csv_path, sep=";")
+
+#df = pd.read_csv("helicobacter_data.csv",encoding="windows-1252", sep=";")
 
 
 # Codificar columnas
