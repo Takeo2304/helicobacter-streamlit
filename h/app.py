@@ -9,6 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import unicodedata
 
 # ---------- CARGAR Y PROCESAR DATOS ----------
 st.title("🧬 Predicción de *Helicobacter spp.* en Animales de Granja")
@@ -18,21 +19,24 @@ Este modelo predice qué especie de *Helicobacter* puede encontrarse en un anima
 según el país, animal, tipo de muestra y año de detección.
 """)
 
-
+# Cargar el CSV
 csv_path = os.path.join(os.path.dirname(__file__), "helicobacter_data.csv")
 df = pd.read_csv(csv_path, sep=";")
 
-#df = pd.read_csv("helicobacter_data.csv",encoding="windows-1252", sep=";")
+# Normalizar nombres de columnas (quita tildes y caracteres especiales)
+def normalizar_columna(col):
+    return ''.join((c for c in unicodedata.normalize('NFD', col) if unicodedata.category(c) != 'Mn'))
 
+df.columns = [normalizar_columna(col) for col in df.columns]
 
-# Codificar columnas
+# Codificar variables categóricas
 le_animal = LabelEncoder()
 le_pais = LabelEncoder()
 le_muestra = LabelEncoder()
 le_especie = LabelEncoder()
 
 df["Animal_encoded"] = le_animal.fit_transform(df["Animal"])
-df["País_encoded"] = le_pais.fit_transform(df["País"])
+df["Pais_encoded"] = le_pais.fit_transform(df["Pais"])
 df["Muestra_encoded"] = le_muestra.fit_transform(df["Muestra"])
 df["Especie_encoded"] = le_especie.fit_transform(df["Especie"])
 
@@ -44,7 +48,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 modelo = RandomForestClassifier(n_estimators=100, random_state=42)
 modelo.fit(X_train, y_train)
 
-# Guardar objetos
+# Guardar modelo y codificadores
 joblib.dump(modelo, "modelo_helicobacter.pkl")
 joblib.dump(le_animal, "le_animal.pkl")
 joblib.dump(le_pais, "le_pais.pkl")
@@ -60,7 +64,6 @@ muestra = st.selectbox("Tipo de muestra", le_muestra.classes_)
 anio = st.slider("Año", 2000, 2025, 2025)
 
 if st.button("Predecir especie"):
-    # Codificar entrada
     animal_enc = le_animal.transform([animal])[0]
     pais_enc = le_pais.transform([pais])[0]
     muestra_enc = le_muestra.transform([muestra])[0]
