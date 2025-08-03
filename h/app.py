@@ -34,7 +34,7 @@ df.columns = [normalizar_columna(col) for col in df.columns]
 df.rename(columns={"Ano": "Año"}, inplace=True)
 
 # Mostrar columnas para depuración
-st.write("🧾 Columnas detectadas:", df.columns.tolist())
+#st.write("🧾 Columnas detectadas:", df.columns.tolist())
 
 # Verificar que estén todas las columnas necesarias
 columnas_necesarias = ["Animal", "Pais", "Muestra", "Año", "Especie"]
