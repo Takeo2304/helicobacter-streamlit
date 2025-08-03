@@ -26,9 +26,12 @@ df = pd.read_excel(excel_path, engine='openpyxl')
 # Función para limpiar nombres de columnas
 def normalizar_columna(col):
     col = ''.join((c for c in unicodedata.normalize('NFD', col) if unicodedata.category(c) != 'Mn'))  # quita tildes
-    return col.strip().capitalize()  # elimina espacios y normaliza capitalización
+    return col.strip().capitalize()
 
 df.columns = [normalizar_columna(col) for col in df.columns]
+
+# Renombrar "Ano" a "Año" explícitamente si aparece
+df.rename(columns={"Ano": "Año"}, inplace=True)
 
 # Mostrar columnas para depuración
 st.write("🧾 Columnas detectadas:", df.columns.tolist())
