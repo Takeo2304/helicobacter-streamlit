@@ -19,18 +19,29 @@ Este modelo predice qué especie de *Helicobacter* puede encontrarse en un anima
 según el país, animal, tipo de muestra y año de detección.
 """)
 
-# Cambia la línea de lectura así:
+# Ruta al archivo Excel
 excel_path = os.path.join(os.path.dirname(__file__), "helicobacter_data.xlsx")
 df = pd.read_excel(excel_path, engine='openpyxl')
 
-
-# Normalizar nombres de columnas (quita tildes y caracteres especiales)
+# Función para limpiar nombres de columnas
 def normalizar_columna(col):
-    return ''.join((c for c in unicodedata.normalize('NFD', col) if unicodedata.category(c) != 'Mn'))
+    col = ''.join((c for c in unicodedata.normalize('NFD', col) if unicodedata.category(c) != 'Mn'))  # quita tildes
+    return col.strip().capitalize()  # elimina espacios y normaliza capitalización
 
 df.columns = [normalizar_columna(col) for col in df.columns]
 
-# Codificar variables categóricas
+# Mostrar columnas para depuración
+st.write("🧾 Columnas detectadas:", df.columns.tolist())
+
+# Verificar que estén todas las columnas necesarias
+columnas_necesarias = ["Animal", "Pais", "Muestra", "Año", "Especie"]
+faltantes = [col for col in columnas_necesarias if col not in df.columns]
+
+if faltantes:
+    st.error(f"❌ Faltan columnas en el archivo Excel: {faltantes}")
+    st.stop()
+
+# ---------- CODIFICACIÓN ----------
 le_animal = LabelEncoder()
 le_pais = LabelEncoder()
 le_muestra = LabelEncoder()
@@ -41,7 +52,7 @@ df["Pais_encoded"] = le_pais.fit_transform(df["Pais"])
 df["Muestra_encoded"] = le_muestra.fit_transform(df["Muestra"])
 df["Especie_encoded"] = le_especie.fit_transform(df["Especie"])
 
-# Entrenar modelo
+# ---------- ENTRENAMIENTO ----------
 X = df[["Animal_encoded", "Pais_encoded", "Muestra_encoded", "Año"]]
 y = df["Especie_encoded"]
 
@@ -90,5 +101,3 @@ sns.heatmap(cm, annot=True, fmt="d", xticklabels=le_especie.classes_, yticklabel
 plt.ylabel("Real")
 plt.xlabel("Predicho")
 st.pyplot(fig)
-
-
