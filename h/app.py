@@ -19,9 +19,10 @@ Este modelo predice qué especie de *Helicobacter* puede encontrarse en un anima
 según el país, animal, tipo de muestra y año de detección.
 """)
 
-# Cargar el CSV
-csv_path = os.path.join(os.path.dirname(__file__), "helicobacter_data.csv")
-df = pd.read_csv(csv_path, sep=";", encoding="latin1")
+# Cambia la línea de lectura así:
+excel_path = os.path.join(os.path.dirname(__file__), "helicobacter_data.xlsx")
+df = pd.read_excel(excel_path, engine='openpyxl')
+
 
 # Normalizar nombres de columnas (quita tildes y caracteres especiales)
 def normalizar_columna(col):
@@ -89,3 +90,5 @@ sns.heatmap(cm, annot=True, fmt="d", xticklabels=le_especie.classes_, yticklabel
 plt.ylabel("Real")
 plt.xlabel("Predicho")
 st.pyplot(fig)
+
+
