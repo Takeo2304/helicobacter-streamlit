@@ -89,21 +89,36 @@ if st.button("Predecir especie"):
 
     st.success(f"✅ Especie predicha: **{especie_predicha}**")
 
+y_pred_test = modelo.predict(X_test)
+report = classification_report(y_test, y_pred_test, target_names=le_especie.classes_, output_dict=True)
+df_report = pd.DataFrame(report).transpose()
+st.subheader("🔎 Desempeño del Modelo")
+st.dataframe(df_report)
+
 # ---------- VISUALIZAR MATRIZ DE CONFUSIÓN ----------
 st.header("Desempeño del Modelo")
 
 
-y_pred = modelo.predict(X_test)
-reporte = classification_report(y_test, y_pred, target_names=le_especie.classes_, output_dict=True)
-df_reporte = pd.DataFrame(reporte).transpose()
-st.dataframe(df_reporte.style.format(precision=2))
+#y_pred = modelo.predict(X_test)
+#reporte = classification_report(y_test, y_pred, target_names=le_especie.classes_, output_dict=True)
+#df_reporte = pd.DataFrame(reporte).transpose()
+#st.dataframe(df_reporte.style.format(precision=2))
 
-cm = confusion_matrix(y_test, y_pred)
+#cm = confusion_matrix(y_test, y_pred)
+#fig, ax = plt.subplots()
+#sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+ #           xticklabels=le_especie.classes_,
+  #          yticklabels=le_especie.classes_,
+   #         ax=ax)
+#plt.ylabel("Especie real")
+#plt.xlabel("Especie predicha")
+#st.pyplot(fig)
+
+mat = confusion_matrix(y_test, y_pred_test)
 fig, ax = plt.subplots()
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+sns.heatmap(mat, annot=True, fmt="d", cmap="Blues",
             xticklabels=le_especie.classes_,
-            yticklabels=le_especie.classes_,
-            ax=ax)
-plt.ylabel("Especie real")
+            yticklabels=le_especie.classes_)
 plt.xlabel("Especie predicha")
+plt.ylabel("Especie real")
 st.pyplot(fig)
