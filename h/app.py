@@ -6,8 +6,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
+import plotly.figure_factory as ff
 import os
 import unicodedata
 
@@ -23,20 +23,16 @@ según el país, animal, tipo de muestra y año de detección.
 excel_path = os.path.join(os.path.dirname(__file__), "helicobacter_data.xlsx")
 df = pd.read_excel(excel_path, engine='openpyxl')
 
+
 # Función para limpiar nombres de columnas
 def normalizar_columna(col):
-    col = ''.join((c for c in unicodedata.normalize('NFD', col) if unicodedata.category(c) != 'Mn'))  # quita tildes
+    col = ''.join((c for c in unicodedata.normalize('NFD', col) if unicodedata.category(c) != 'Mn'))
     return col.strip().capitalize()
 
-df.columns = [normalizar_columna(col) for col in df.columns]
 
-# Renombrar "Ano" a "Año" explícitamente si aparece
+df.columns = [normalizar_columna(col) for col in df.columns]
 df.rename(columns={"Ano": "Año"}, inplace=True)
 
-# Mostrar columnas para depuración
-#st.write("🧾 Columnas detectadas:", df.columns.tolist())
-
-# Verificar que estén todas las columnas necesarias
 columnas_necesarias = ["Animal", "Pais", "Muestra", "Año", "Especie"]
 faltantes = [col for col in columnas_necesarias if col not in df.columns]
 
@@ -63,7 +59,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 modelo = RandomForestClassifier(n_estimators=100, random_state=42)
 modelo.fit(X_train, y_train)
 
-# Guardar modelo y codificadores
 joblib.dump(modelo, "modelo_helicobacter.pkl")
 joblib.dump(le_animal, "le_animal.pkl")
 joblib.dump(le_pais, "le_pais.pkl")
@@ -82,43 +77,55 @@ if st.button("Predecir especie"):
     animal_enc = le_animal.transform([animal])[0]
     pais_enc = le_pais.transform([pais])[0]
     muestra_enc = le_muestra.transform([muestra])[0]
-
     entrada = np.array([[animal_enc, pais_enc, muestra_enc, anio]])
+
     pred = modelo.predict(entrada)
     especie_predicha = le_especie.inverse_transform(pred)[0]
 
-    st.success(f"✅ Especie predicha: **{especie_predicha}**")
+    # Mostrar probabilidades
+    proba = modelo.predict_proba(entrada)[0]
+    especies = le_especie.inverse_transform(np.arange(len(proba)))
+    proba_df = pd.DataFrame({
+        "Especie": especies,
+        "Probabilidad": proba
+    }).sort_values(by="Probabilidad", ascending=False)
 
+    st.success(f"✅ Especie predicha: **{especie_predicha}**")
+    st.write("📊 Probabilidades de predicción:")
+    st.dataframe(proba_df)
+
+    fig_proba = px.bar(proba_df, x="Especie", y="Probabilidad", title="Probabilidades por especie")
+    st.plotly_chart(fig_proba)
+
+# ---------- DESEMPEÑO DEL MODELO ----------
 y_pred_test = modelo.predict(X_test)
 report = classification_report(y_test, y_pred_test, target_names=le_especie.classes_, output_dict=True)
 df_report = pd.DataFrame(report).transpose()
-st.subheader("🔎 Desempeño del Modelo")
+
+st.subheader("📈 Desempeño del Modelo")
 st.dataframe(df_report)
 
-# ---------- VISUALIZAR MATRIZ DE CONFUSIÓN ----------
-st.header("Desempeño del Modelo")
-
-
-#y_pred = modelo.predict(X_test)
-#reporte = classification_report(y_test, y_pred, target_names=le_especie.classes_, output_dict=True)
-#df_reporte = pd.DataFrame(reporte).transpose()
-#st.dataframe(df_reporte.style.format(precision=2))
-
-#cm = confusion_matrix(y_test, y_pred)
-#fig, ax = plt.subplots()
-#sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
- #           xticklabels=le_especie.classes_,
-  #          yticklabels=le_especie.classes_,
-   #         ax=ax)
-#plt.ylabel("Especie real")
-#plt.xlabel("Especie predicha")
-#st.pyplot(fig)
-
+# ---------- MATRIZ DE CONFUSIÓN INTERACTIVA ----------
 mat = confusion_matrix(y_test, y_pred_test)
-fig, ax = plt.subplots()
-sns.heatmap(mat, annot=True, fmt="d", cmap="Blues",
-            xticklabels=le_especie.classes_,
-            yticklabels=le_especie.classes_)
-plt.xlabel("Especie predicha")
-plt.ylabel("Especie real")
-st.pyplot(fig)
+z = mat.tolist()
+x = le_especie.classes_
+y_labels = le_especie.classes_
+
+fig_cm = ff.create_annotated_heatmap(
+    z=z,
+    x=x,
+    y=y_labels,
+    colorscale='Blues',
+    showscale=True,
+    reversescale=False,
+    font_colors=["black"],
+    annotation_text=mat.astype(str)
+)
+
+fig_cm.update_layout(
+    title="🔷 Matriz de Confusión Interactiva",
+    xaxis_title="Especie predicha",
+    yaxis_title="Especie real"
+)
+
+st.plotly_chart(fig_cm)
