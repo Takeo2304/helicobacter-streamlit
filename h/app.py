@@ -25,8 +25,6 @@ Detectar patrones epidemiológicos para vigilancia tipo One Health.
 
 Aplicar IA en microbiología, automatizando análisis repetitivos.
 
-Fortalecer un portafolio académico o profesional con un caso real.
-
 Escalar el sistema incluyendo genética, ambiente o metadatos clínicos.
 """)
 
@@ -114,7 +112,7 @@ report = classification_report(y_test, y_pred_test, target_names=le_especie.clas
 df_report = pd.DataFrame(report).transpose()
 
 #st.subheader("Desempeño del Modelo")
-st.dataframe(df_report)
+#st.dataframe(df_report)
 
 # ---------- MATRIZ DE CONFUSIÓN INTERACTIVA ----------
 mat = confusion_matrix(y_test, y_pred_test)
