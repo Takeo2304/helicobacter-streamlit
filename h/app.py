@@ -12,11 +12,22 @@ import os
 import unicodedata
 
 # ---------- CARGAR Y PROCESAR DATOS ----------
-st.title("🧬 Predicción de *Helicobacter spp.* en Animales de Granja")
+st.title("Predicción de la distribucion de *Helicobacter spp.* en Animales de Granja")
 
 st.markdown("""
 Este modelo predice qué especie de *Helicobacter* puede encontrarse en un animal de granja
 según el país, animal, tipo de muestra y año de detección.
+""")
+st.markdown("""
+Priorizar diagnósticos en laboratorios veterinarios.
+
+Detectar patrones epidemiológicos para vigilancia tipo One Health.
+
+Aplicar IA en microbiología, automatizando análisis repetitivos.
+
+Fortalecer un portafolio académico o profesional con un caso real.
+
+Escalar el sistema incluyendo genética, ambiente o metadatos clínicos.
 """)
 
 # Ruta al archivo Excel
@@ -66,7 +77,7 @@ joblib.dump(le_muestra, "le_muestra.pkl")
 joblib.dump(le_especie, "le_especie.pkl")
 
 # ---------- FORMULARIO PARA PREDICCIÓN ----------
-st.header("🔍 Ingresar datos para predicción")
+st.header("Ingresar datos para predicción")
 
 animal = st.selectbox("Animal", le_animal.classes_)
 pais = st.selectbox("País", le_pais.classes_)
@@ -91,7 +102,7 @@ if st.button("Predecir especie"):
     }).sort_values(by="Probabilidad", ascending=False)
 
     st.success(f"✅ Especie predicha: **{especie_predicha}**")
-    st.write("📊 Probabilidades de predicción:")
+    st.write(" Probabilidades de predicción:")
     st.dataframe(proba_df)
 
     fig_proba = px.bar(proba_df, x="Especie", y="Probabilidad", title="Probabilidades por especie")
@@ -102,7 +113,7 @@ y_pred_test = modelo.predict(X_test)
 report = classification_report(y_test, y_pred_test, target_names=le_especie.classes_, output_dict=True)
 df_report = pd.DataFrame(report).transpose()
 
-st.subheader("📈 Desempeño del Modelo")
+#st.subheader("Desempeño del Modelo")
 st.dataframe(df_report)
 
 # ---------- MATRIZ DE CONFUSIÓN INTERACTIVA ----------
