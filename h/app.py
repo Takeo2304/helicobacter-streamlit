@@ -19,13 +19,11 @@ Este modelo predice qué especie de *Helicobacter* puede encontrarse en un anima
 según el país, animal, tipo de muestra y año de detección.
 """)
 st.markdown("""
-Priorizar diagnósticos en laboratorios veterinarios.
-
-Detectar patrones epidemiológicos para vigilancia tipo One Health.
-
-Aplicar IA en microbiología, automatizando análisis repetitivos.
-
-Escalar el sistema incluyendo genética, ambiente o metadatos clínicos.
+*Porque hacerlo ??*
+1) Priorizar diagnósticos en laboratorios veterinarios.
+2) Detectar patrones epidemiológicos para detección temprana de patrones de transmisión o coinfección y vigilancia one health.
+3) Aplicar IA en microbiología, automatizando análisis repetitivos.
+4) Escalar el sistema incluyendo genética, ambiente o metadatos clínicos.
 """)
 
 # Ruta al archivo Excel
@@ -104,7 +102,7 @@ if st.button("Predecir especie"):
     st.dataframe(proba_df)
 
     fig_proba = px.bar(proba_df, x="Especie", y="Probabilidad", title="Probabilidades por especie")
-    st.plotly_chart(fig_proba)
+    #st.plotly_chart(fig_proba)
 
 # ---------- DESEMPEÑO DEL MODELO ----------
 y_pred_test = modelo.predict(X_test)
