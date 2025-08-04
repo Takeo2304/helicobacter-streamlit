@@ -90,17 +90,20 @@ if st.button("Predecir especie"):
     st.success(f"✅ Especie predicha: **{especie_predicha}**")
 
 # ---------- VISUALIZAR MATRIZ DE CONFUSIÓN ----------
-st.header("📊 Desempeño del Modelo")
+st.header("Desempeño del Modelo")
+
 
 y_pred = modelo.predict(X_test)
-report = classification_report(y_test, y_pred, output_dict=True, target_names=le_especie.classes_)
-df_report = pd.DataFrame(report).transpose()
-st.dataframe(df_report)
+reporte = classification_report(y_test, y_pred, target_names=le_especie.classes_, output_dict=True)
+df_reporte = pd.DataFrame(reporte).transpose()
+st.dataframe(df_reporte.style.format(precision=2))
 
-# Matriz de confusión
 cm = confusion_matrix(y_test, y_pred)
 fig, ax = plt.subplots()
-sns.heatmap(cm, annot=True, fmt="d", xticklabels=le_especie.classes_, yticklabels=le_especie.classes_, cmap="Blues", ax=ax)
-plt.ylabel("Real")
-plt.xlabel("Predicho")
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+            xticklabels=le_especie.classes_,
+            yticklabels=le_especie.classes_,
+            ax=ax)
+plt.ylabel("Especie real")
+plt.xlabel("Especie predicha")
 st.pyplot(fig)
