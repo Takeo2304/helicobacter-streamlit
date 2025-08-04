@@ -108,18 +108,16 @@ st.dataframe(df_report)
 # ---------- MATRIZ DE CONFUSIÓN INTERACTIVA ----------
 mat = confusion_matrix(y_test, y_pred_test)
 z = mat.tolist()
-x = le_especie.classes_
-y_labels = le_especie.classes_
+etiquetas = le_especie.classes_.tolist()
 
 fig_cm = ff.create_annotated_heatmap(
     z=z,
-    x=x,
-    y=y_labels,
+    x=etiquetas,
+    y=etiquetas,
     colorscale='Blues',
     showscale=True,
-    reversescale=False,
-    font_colors=["black"],
-    annotation_text=mat.astype(str)
+    annotation_text=[[str(val) for val in row] for row in z],
+    font_colors=["black"]
 )
 
 fig_cm.update_layout(
