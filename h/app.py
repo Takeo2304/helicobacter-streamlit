@@ -102,7 +102,7 @@ if st.button("Predecir especie"):
     st.dataframe(proba_df)
 
     fig_proba = px.bar(proba_df, x="Especie", y="Probabilidad", title="Probabilidades por especie")
-    #st.plotly_chart(fig_proba)
+    st.plotly_chart(fig_proba)
 
 # ---------- DESEMPEÑO DEL MODELO ----------
 y_pred_test = modelo.predict(X_test)
@@ -133,4 +133,4 @@ fig_cm.update_layout(
     yaxis_title="Especie real"
 )
 
-st.plotly_chart(fig_cm)
+#st.plotly_chart(fig_cm)
